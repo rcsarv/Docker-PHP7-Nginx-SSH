@@ -20,7 +20,8 @@ RUN sed -ir 's/#HostKey \/etc\/ssh\/ssh_host_ecdsa_key/HostKey \/etc\/ssh\/ssh_h
 RUN sed -ir 's/#HostKey \/etc\/ssh\/ssh_host_ed25519_key/HostKey \/etc\/ssh\/ssh_host_ed25519_key/g' /etc/ssh/sshd_config
 RUN /usr/bin/ssh-keygen -A
 RUN ssh-keygen -t rsa -b 4096 -f  /etc/ssh/ssh_host_key
-RUN chown -R nobody.nobody /etc/ssh/
+RUN chown -R nobody.nobody /etc/ssh/ && \
+      chown nobody.nobody /usr/sbin/sshd
 
 # Configure nginx
 COPY config/nginx.conf /etc/nginx/nginx.conf
