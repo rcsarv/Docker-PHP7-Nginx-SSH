@@ -20,8 +20,7 @@ RUN sed -ir 's/#HostKey \/etc\/ssh\/ssh_host_ecdsa_key/HostKey \/etc\/ssh\/ssh_h
 RUN sed -ir 's/#HostKey \/etc\/ssh\/ssh_host_ed25519_key/HostKey \/etc\/ssh\/ssh_host_ed25519_key/g' /etc/ssh/sshd_config
 RUN /usr/bin/ssh-keygen -A
 RUN ssh-keygen -t rsa -b 4096 -f  /etc/ssh/ssh_host_key
-RUN chown -R nobody.nobody /etc/ssh/ && \
-      chown nobody.nobody /usr/sbin/sshd
+
 
 # Configure nginx
 COPY config/nginx.conf /etc/nginx/nginx.conf
@@ -33,17 +32,13 @@ COPY config/php.ini /etc/php7/conf.d/zzz_custom.ini
 # Configure supervisord
 COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Make sure files/folders needed by the processes are accessable when they run under the nobody user
-RUN chown -R nobody.nobody /run && \
-  chown -R nobody.nobody /var/lib/nginx && \
-  chown -R nobody.nobody /var/tmp/nginx && \
-  chown -R nobody.nobody /var/log/nginx
+
 
 # Setup document root
 RUN mkdir -p /var/www/html
 
 # Switch to use a non-root user from here on
-USER nobody
+USER root
 
 # Add application
 WORKDIR /var/www/html
