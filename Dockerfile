@@ -45,7 +45,7 @@ USER nobody
 
 # Add application
 WORKDIR /var/www/html
-COPY --chown=nobody src/ /var/www/html/
+COPY --chown=nobody html/ /var/www/html/
 
 # Expose the port nginx is reachable on
 EXPOSE 8080
