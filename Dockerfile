@@ -8,7 +8,7 @@ RUN apk --no-cache add php7 php7-fpm php7-mysqli php7-json php7-openssl php7-cur
     php7-mbstring php7-gd nginx supervisor curl
 
 #Install SSH
-RUN apk update && apk install openssh-server
+RUN apk update && apk add openssh-server
 RUN mkdir /var/run/sshd
 RUN echo 'root:PassWord@ChangeMe' | chpasswd
 RUN echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
