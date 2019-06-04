@@ -12,6 +12,7 @@ The image is only +/- 35MB large.
 * The logs of all the services are redirected to the output of the Docker container (visible with `docker logs -f <container name>`)
 * Follows the KISS principle (Keep It Simple, Stupid) to make it easy to understand and adjust the image
 * Nginx work on 8080 port
+* PHP Support: MongoDB, Redis & Mysql
 
 
 
