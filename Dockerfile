@@ -7,6 +7,20 @@ RUN apk --no-cache add php7 php7-fpm php7-mysqli php7-json php7-openssl php7-cur
     php7-zlib php7-xml php7-phar php7-intl php7-dom php7-xmlreader php7-ctype \
     php7-mbstring php7-gd nginx supervisor curl
 
+#Install SSH
+RUN apt-get update && apt-get install -y openssh-server
+RUN mkdir /var/run/sshd
+RUN echo 'root:PassWord@ChangeMe' | chpasswd
+RUN echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
+#RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+RUN echo 'ClientAliveInterval 300' >> /etc/ssh/sshd_config
+RUN echo  'ClientAliveCountMax 10' >> /etc/ssh/sshd_config
+# SSH login fix. Otherwise user is kicked off after login
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+ENV NOTVISIBLE "in users profile"
+RUN echo "export VISIBLE=now" >> /etc/profile
+
+
 # Configure nginx
 COPY config/nginx.conf /etc/nginx/nginx.conf
 
@@ -36,8 +50,11 @@ COPY --chown=nobody src/ /var/www/html/
 # Expose the port nginx is reachable on
 EXPOSE 8080
 
+#SSH Port
+EXPOSE 22
+
 # Let supervisord start nginx & php-fpm
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf" ,  "/usr/sbin/sshd"]
 
 # Configure a healthcheck to validate that everything is up&running
 HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:8080/fpm-ping
