@@ -8,17 +8,18 @@ RUN apk --no-cache add php7 php7-fpm php7-mysqli php7-json php7-openssl php7-cur
     php7-mbstring php7-gd nginx supervisor curl
 
 #Install SSH
-RUN apk update && apk add openssh-server
-RUN mkdir /var/run/sshd
-RUN echo 'root:PassWord@ChangeMe' | chpasswd
-RUN echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
-#RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-RUN echo 'ClientAliveInterval 300' >> /etc/ssh/sshd_config
-RUN echo  'ClientAliveCountMax 10' >> /etc/ssh/sshd_config
-# SSH login fix. Otherwise user is kicked off after login
-#RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
-#ENV NOTVISIBLE "in users profile"
-#RUN echo "export VISIBLE=now" >> /etc/profile
+RUN apk --update add --no-cache openssh bash \
+  && sed -i s/#PermitRootLogin.*/PermitRootLogin\ yes/ /etc/ssh/sshd_config \
+  && echo "root:ChangeMe3" | chpasswd \
+  && rm -rf /var/cache/apk/*
+RUN sed -ie 's/#Port 22/Port 22/g' /etc/ssh/sshd_config
+RUN sed -ri 's/#HostKey \/etc\/ssh\/ssh_host_key/HostKey \/etc\/ssh\/ssh_host_key/g' /etc/ssh/sshd_config
+RUN sed -ir 's/#HostKey \/etc\/ssh\/ssh_host_rsa_key/HostKey \/etc\/ssh\/ssh_host_rsa_key/g' /etc/ssh/sshd_config
+RUN sed -ir 's/#HostKey \/etc\/ssh\/ssh_host_dsa_key/HostKey \/etc\/ssh\/ssh_host_dsa_key/g' /etc/ssh/sshd_config
+RUN sed -ir 's/#HostKey \/etc\/ssh\/ssh_host_ecdsa_key/HostKey \/etc\/ssh\/ssh_host_ecdsa_key/g' /etc/ssh/sshd_config
+RUN sed -ir 's/#HostKey \/etc\/ssh\/ssh_host_ed25519_key/HostKey \/etc\/ssh\/ssh_host_ed25519_key/g' /etc/ssh/sshd_config
+RUN /usr/bin/ssh-keygen -A
+RUN ssh-keygen -t rsa -b 4096 -f  /etc/ssh/ssh_host_key
 
 
 # Configure nginx
