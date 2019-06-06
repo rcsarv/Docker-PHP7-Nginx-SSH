@@ -24,6 +24,7 @@ RUN ssh-keygen -t rsa -b 4096 -f  /etc/ssh/ssh_host_key
 
 # Configure nginx
 COPY config/nginx.conf /etc/nginx/nginx.conf
+COPY config/sites /etc/nginx/conf.d
 
 # Configure PHP-FPM
 COPY config/fpm-pool.conf /etc/php7/php-fpm.d/www.conf
