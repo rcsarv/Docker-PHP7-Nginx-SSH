@@ -1,0 +1,27 @@
+server {
+  server_name default;
+  root        /var/www/default;
+  index       index.php;
+
+  client_max_body_size 100M;
+  fastcgi_read_timeout 1800;
+
+
+  location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff2|eot|ttf|woff)$ {
+    expires       max;
+    log_not_found off;
+    access_log    off;
+  }
+
+        location / {
+          root    /var/www/default;
+          index   index.php;
+          try_files $uri $uri/ $uri.html $uri.php$is_args$query_string;
+          fastcgi_pass            unix:/var/run/php/php7.0-fpm.sock;
+          fastcgi_index           index.php;
+          fastcgi_param           SCRIPT_FILENAME $document_root$fastcgi_script_name;
+          include                 fastcgi_params;
+        }
+
+
+}
